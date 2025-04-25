@@ -38,7 +38,7 @@ class NetworkVisualizer:
     def __init__(self, input_size, hidden_size, output_size, max_display_nodes=50):
         # Create a larger figure
         self.fig, self.ax = plt.subplots(figsize=(14, 10))
-        self.ax.set_title('Neural Network Visualization', fontsize=16)
+        self.ax.set_title('', fontsize=16)
         self.ax.axis('off')
         
         # For large input layers, we'll only display a subset of nodes
@@ -74,7 +74,7 @@ class NetworkVisualizer:
         # Clear previous plot
         self.ax.clear()
         self.ax.axis('off')
-        self.ax.set_title('Neural Network Visualization', fontsize=16)
+        self.ax.set_title('', fontsize=16)
         
         # Layers positions (x-coordinates)
         input_layer_x = 0.15

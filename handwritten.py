@@ -66,6 +66,7 @@ class NeuralNetMLP:
         rng = np.random.RandomState(random_seed)
 
         # Init weights and biases for hidden layer
+        # the following will generate a matrix of weigths basically each line of the matrix will be virtually associated with a virtual neuron and the column of the matrix will be associated to a specific feature
         self.weight_h = rng.normal(loc=0.0, scale=0.1, size=(num_hidden, num_features))
         self.bias_h = np.zeros(num_hidden)
 
@@ -81,9 +82,10 @@ class NeuralNetMLP:
         # Compute activations for output layer
         z_out = np.dot(a_h, self.weight_out.T) + self.bias_out
         a_out = sigmoid(z_out)
-
         return a_h, a_out
 
+    # the a_h and the a_out are the value gotten from the sigmoid function, look here above
+    # 
     def backward(self, X, a_h, a_out, y):
         # One-hot encode the labels
         y_onehot = int_to_onehot(y, self.num_classes)
@@ -121,7 +123,7 @@ def minibatch_generator(X, y, minibatch_size):
     for start_idx in range(0, indices.shape[0] - minibatch_size + 1, minibatch_size):
         batch_idx = indices[start_idx:start_idx + minibatch_size]
         #print(batch_idx)
-        yield X[batch_idx], y[batch_idx]
+        yield X[batch_idx], y[batch_idx] # pauses the function, saves its state, and gives back one item at a time, like a generator.
 
 
 # iterate over training epochs
