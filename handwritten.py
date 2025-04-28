@@ -76,6 +76,7 @@ class NeuralNetMLP:
 
     def forward(self, X):
         # Compute activations for hidden layer
+        # The dot product that I am getting is actually a matrix, in a single neuron I will get an array, each value would represent the dot product for a specific sample, but here the situation is different. Each array will represent that situation for just one neuron so having multiple neurons that will end up being a matrix
         z_h = np.dot(X, self.weight_h.T) + self.bias_h
         a_h = sigmoid(z_h)
 
@@ -91,6 +92,12 @@ class NeuralNetMLP:
         y_onehot = int_to_onehot(y, self.num_classes)
 
         # Compute gradient of loss w.r.t. output
+        # The following line calculates the partial derivative of the loss function with respect to the activations of the output layer (a_out)
+        # (a_out - y_onehot) This difference represent the error at the output layer for each sample and each class
+        # 2. *(...) This multiplication by 2. comes from the derivate of a common loss function used in this type of problem which is the Mean Squared Error(MSE)
+        # / y.shape[0] since y.shape[0] gives you the number of samples in the current batch, Dividing by this number of samples is part of the MSE. This ensure that the magnitued of the gradient is not overly dependent on the batch size
+        # In summary the d_loss__d_a_out represent the gradient of the Mean Squared Error loss with respect to the output activations, averaged over the number of samples in the batch. I am getting a matrix where each element indicates how much the loss would change with a small change in the corresponding output activation.
+        # the following d_loss__d_a_out it is answering to the question Which outputs are contributing most to the error?
         d_loss__d_a_out = 2. * (a_out - y_onehot) / y.shape[0]
         d_a_out__d_z_out = a_out * (1. - a_out)
         delta_out = d_loss__d_a_out * d_a_out__d_z_out
@@ -178,6 +185,7 @@ def train(model, X_train, y_train, X_valid, y_valid, num_epochs, learning_rate=0
 
     for e in range(num_epochs):
         # iterate over minibatches
+        # minibatches will get generated on runtime one by one. Efficient way to empty the memory. Each batch will be generated, will update the weights and then it will disappear and the for loop will proceed with the next batch
         minibatch_gen = minibatch_generator(X_train, y_train, minibatch_size)
         for X_train_mini, y_train_mini in minibatch_gen:
             # Compute outputs
@@ -204,3 +212,10 @@ def train(model, X_train, y_train, X_valid, y_valid, num_epochs, learning_rate=0
 
 np.random.seed(123) 
 epoch_loss, epoch_train_acc, epoch_valid_acc = train(model, X_train, y_train, X_valid, y_valid, num_epochs=50, learning_rate=0.1)
+
+
+# evaluation the network performances
+plt.plot(range(len(epoch_loss)), epoch_loss)
+plt.ylabel('Mean squared error')
+plt.xlabel('Epoch')
+plt.show()
